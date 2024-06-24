@@ -1,14 +1,18 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type InstrumentCategory struct {
-	gorm.Model
-	Name string `json:"name"`
+	ID        uint       `gorm:"primaryKey" json:"id"`
+	DeletedAt *time.Time `gorm:"index" json:"deleted_at,omitempty"`
+	Name      string     `json:"name"`
 }
 
 type Instrument struct {
-	gorm.Model
+	ID                   uint               `gorm:"primaryKey" json:"id"`
+	DeletedAt            *time.Time         `gorm:"index" json:"deleted_at,omitempty"`
 	Name                 string             `json:"name"`
 	Symbol               string             `json:"symbol"`
 	Price                float64            `json:"price"`

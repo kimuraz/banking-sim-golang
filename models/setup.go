@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"math/rand"
+	"strconv"
 	"strings"
 )
 
@@ -34,6 +35,21 @@ func isDatabaseEmpty() bool {
 	return userCount == 0
 }
 
+func generateFakeIBAN() string {
+	countryCode := "NL"
+	checkDigits := strconv.Itoa(rand.Intn(99) + 10)
+	var bankCode string
+	for {
+		bankCode = faker.Word()
+		if len(bankCode) >= 4 {
+			break
+		}
+	}
+	bankCode = strings.ToUpper(bankCode[:4])
+	accountNumber := strconv.Itoa(rand.Intn(9999999999) + 1000000000)
+	return strings.ToUpper(countryCode + checkDigits + bankCode + accountNumber)
+}
+
 func createInitialData() {
 	var users []User
 	for i := 0; i < 100; i++ {
@@ -52,17 +68,25 @@ func createInitialData() {
 	for _, user := range users {
 		for j := 0; j < rand.Intn(3)+1; j++ {
 			account := Account{
-				UserID:  user.ID,
-				Balance: rand.Float64() * 10000,
+				UserID:        user.ID,
+				Balance:       rand.Float64() * 10000,
+				AccountNumber: generateFakeIBAN(),
 			}
 			accounts = append(accounts, account)
 		}
 	}
 	DB.Create(&accounts)
 
-	// Generate instruments
-	var instruments []Instrument
+	var instrumentCategories []InstrumentCategory
 	for i := 0; i < 10; i++ {
+		category := InstrumentCategory{
+			Name: faker.Word(),
+		}
+		instrumentCategories = append(instrumentCategories, category)
+	}
+
+	var instruments []Instrument
+	for i := 0; i < 100; i++ {
 		var name string
 		for {
 			name = faker.Word()
@@ -72,9 +96,10 @@ func createInitialData() {
 		}
 		symbol := strings.ToUpper(name[:3])
 		instrument := Instrument{
-			Name:   name,
-			Symbol: symbol,
-			Price:  rand.Float64() * 200,
+			Name:               name,
+			Symbol:             symbol,
+			Price:              rand.Float64() * 200,
+			InstrumentCategory: instrumentCategories[rand.Intn(len(instrumentCategories))],
 		}
 		instruments = append(instruments, instrument)
 	}

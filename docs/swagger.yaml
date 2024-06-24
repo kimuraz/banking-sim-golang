@@ -1,0 +1,245 @@
+basePath: /api/v1
+definitions:
+  handlers.LoginInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.Account:
+    properties:
+      account_number:
+        type: string
+      balance:
+        type: number
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.Instrument:
+    properties:
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      instrument_category_id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      symbol:
+        type: string
+    type: object
+  models.InstrumentCategory:
+    properties:
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Investment:
+    properties:
+      amount:
+        type: number
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      instrument_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.Transaction:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: number
+      category_id:
+        type: integer
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      to_account:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      deleted_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      token:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a read-only API for simulating banking operations.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Banking Simulation API
+  version: "1.0"
+paths:
+  /accounts:
+    get:
+      consumes:
+      - application/json
+      description: Get all accounts for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Account'
+            type: array
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get accounts
+      tags:
+      - accounts
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: Login, note that the password is just `password`
+      parameters:
+      - description: Login
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Login
+      tags:
+      - auth
+  /emails:
+    get:
+      consumes:
+      - application/json
+      description: Get all emails, use it for auth
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get emails
+      tags:
+      - emails
+  /instruments:
+    get:
+      consumes:
+      - application/json
+      description: Get all instruments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Instrument'
+            type: array
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get investments instruments
+      tags:
+      - instruments
+  /instruments_categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all instruments categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.InstrumentCategory'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get investments instruments categories
+      tags:
+      - instruments
+  /investments:
+    get:
+      consumes:
+      - application/json
+      description: Get all investments for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Investment'
+            type: array
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get investments
+      tags:
+      - investments
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Transaction'
+            type: array
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get transactions
+      tags:
+      - transactions
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

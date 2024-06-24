@@ -6,6 +6,16 @@ import (
 	"net/http"
 )
 
+// GetTransactions godoc
+// @Summary Get transactions
+// @Description Get all transactions for the authenticated user
+// @Tags transactions
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} models.Transaction
+// @Router /transactions [get]
 func GetTransactions(c *gin.Context) {
 	user, _ := c.Get("user")
 	var accounts []models.Account
