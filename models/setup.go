@@ -35,17 +35,9 @@ func isDatabaseEmpty() bool {
 	return userCount == 0
 }
 
-func generateFakeIBAN() string {
+func generateFakeIBAN(bankCode string) string {
 	countryCode := "NL"
 	checkDigits := strconv.Itoa(rand.Intn(99) + 10)
-	var bankCode string
-	for {
-		bankCode = faker.Word()
-		if len(bankCode) >= 4 {
-			break
-		}
-	}
-	bankCode = strings.ToUpper(bankCode[:4])
 	accountNumber := strconv.Itoa(rand.Intn(9999999999) + 1000000000)
 	return strings.ToUpper(countryCode + checkDigits + bankCode + accountNumber)
 }
@@ -65,12 +57,20 @@ func createInitialData() {
 	DB.Create(&users)
 
 	var accounts []Account
+	var bankCode string
+	for {
+		bankCode = faker.Word()
+		if len(bankCode) >= 4 {
+			break
+		}
+	}
+	bankCode = strings.ToUpper(bankCode[:4])
 	for _, user := range users {
 		for j := 0; j < rand.Intn(3)+1; j++ {
 			account := Account{
 				UserID:        user.ID,
 				Balance:       rand.Float64() * 10000,
-				AccountNumber: generateFakeIBAN(),
+				AccountNumber: generateFakeIBAN(bankCode),
 			}
 			accounts = append(accounts, account)
 		}
