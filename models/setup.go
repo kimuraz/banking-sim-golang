@@ -6,8 +6,10 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"math/rand"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var DB *gorm.DB
@@ -44,6 +46,16 @@ func generateFakeIBAN(bankCode string) string {
 
 func generateTwoDecimalFloat(value float64) float64 {
 	return float64(int(value*100)) / 100
+}
+
+func generateRandomDateBetween(startDate, endDate time.Time) time.Time {
+	min := startDate.Unix()
+	max := endDate.Unix()
+	delta := max - min
+
+	randomTime := min + rand.Int63n(delta)
+
+	return time.Unix(randomTime, 0).UTC()
 }
 
 func createInitialData() {
@@ -137,18 +149,26 @@ func createInitialData() {
 
 	var transactions []Transaction
 	for _, fromAccount := range accounts {
-		for j := 0; j < rand.Intn(10); j++ {
+		for j := 0; j < rand.Intn(20000)+400; j++ {
 			toAccount := accounts[rand.Intn(len(accounts))]
+			startDate := time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)
+			endDate := time.Now()
 			if toAccount.ID != fromAccount.ID {
 				transaction := Transaction{
 					AccountID:   fromAccount.ID,
 					ToAccountID: toAccount.ID,
 					Amount:      generateTwoDecimalFloat(rand.Float64() * 500),
 					CategoryID:  categories[rand.Intn(len(categories))].ID,
+					Datetime:    generateRandomDateBetween(startDate, endDate),
 				}
 				transactions = append(transactions, transaction)
 			}
 		}
+		sort.Slice(transactions, func(i, j int) bool {
+			return transactions[i].Datetime.Before(transactions[j].Datetime)
+		})
+		DB.Create(&transactions)
+		transactions = []Transaction{}
 	}
-	DB.Create(&transactions)
+
 }

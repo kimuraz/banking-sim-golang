@@ -38,8 +38,8 @@ func main() {
 	auth.Use(middleware.Auth())
 	{
 		auth.GET("/accounts", handlers.GetAccounts)
+		auth.GET("/accounts/:account_id/transactions", handlers.GetTransactions)
 		auth.GET("/instruments", handlers.GetInstruments)
-		auth.GET("/transactions", handlers.GetTransactions)
 		auth.GET("/investments", handlers.GetInvestments)
 
 		auth.GET("/transactions_categories", handlers.GetTransactionCategories)

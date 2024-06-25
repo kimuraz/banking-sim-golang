@@ -8,6 +8,8 @@ COPY . .
 
 ENV CGO_ENABLED=1
 
+ENV GIN_MODE=release
+
 RUN go build
 
 CMD ["./banking_sim"]

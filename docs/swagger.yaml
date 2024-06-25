@@ -10,6 +10,25 @@ definitions:
     - email
     - password
     type: object
+  handlers.TransactionResponse:
+    properties:
+      account:
+        type: string
+      account_id:
+        type: integer
+      amount:
+        type: number
+      category_id:
+        type: integer
+      datetime:
+        type: string
+      id:
+        type: integer
+      to_account:
+        type: string
+      to_account_id:
+        type: integer
+    type: object
   models.Account:
     properties:
       account_number:
@@ -60,21 +79,6 @@ definitions:
       user_id:
         type: integer
     type: object
-  models.Transaction:
-    properties:
-      account_id:
-        type: integer
-      amount:
-        type: number
-      category_id:
-        type: integer
-      deleted_at:
-        type: string
-      id:
-        type: integer
-      to_account:
-        type: integer
-    type: object
   models.User:
     properties:
       deleted_at:
@@ -119,6 +123,53 @@ paths:
       summary: Get accounts
       tags:
       - accounts
+  /accounts/{account_id}/transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions for the authenticated user
+      parameters:
+      - description: Account ID
+        in: path
+        name: account_id
+        required: true
+        type: string
+      - description: Date from
+        in: query
+        name: date_from
+        type: string
+      - description: Date to
+        in: query
+        name: date_to
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Order by date ASC or DESC
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.TransactionResponse'
+            type: array
+      security:
+      - BearerAuth: []
+      - BearerAuth: []
+      summary: Get transactions
+      tags:
+      - accounts
+      - transactions
   /auth:
     post:
       consumes:
@@ -238,26 +289,6 @@ paths:
       summary: Get investments
       tags:
       - investments
-  /transactions:
-    get:
-      consumes:
-      - application/json
-      description: Get all transactions for the authenticated user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Transaction'
-            type: array
-      security:
-      - BearerAuth: []
-      - BearerAuth: []
-      summary: Get transactions
-      tags:
-      - transactions
 securityDefinitions:
   BearerAuth:
     in: header

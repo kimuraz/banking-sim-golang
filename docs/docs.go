@@ -53,6 +53,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/accounts/{account_id}/transactions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all transactions for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts",
+                    "transactions"
+                ],
+                "summary": "Get transactions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "account_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from",
+                        "name": "date_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date to",
+                        "name": "date_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order by date ASC or DESC",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.TransactionResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth": {
             "post": {
                 "description": "Login, note that the password is just ` + "`" + `password` + "`" + `",
@@ -243,40 +317,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/transactions": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    },
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all transactions for the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "transactions"
-                ],
-                "summary": "Get transactions",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Transaction"
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -292,6 +332,35 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "type": "string"
+                },
+                "account_id": {
+                    "type": "integer"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "datetime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "to_account": {
+                    "type": "string"
+                },
+                "to_account_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -368,29 +437,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.Transaction": {
-            "type": "object",
-            "properties": {
-                "account_id": {
-                    "type": "integer"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "category_id": {
-                    "type": "integer"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "to_account": {
                     "type": "integer"
                 }
             }
