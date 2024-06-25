@@ -5,6 +5,7 @@ import (
 	"banking_sim/handlers"
 	"banking_sim/middleware"
 	"banking_sim/models"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -26,7 +27,10 @@ func main() {
 	models.InitDB()
 
 	router := gin.Default()
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	configCors := cors.DefaultConfig()
+	configCors.AllowAllOrigins = true
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.Use(cors.New(configCors))
 
 	auth := router.Group("/api/v1")
 	auth.POST("/auth", handlers.Login)
