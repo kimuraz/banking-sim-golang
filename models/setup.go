@@ -42,6 +42,10 @@ func generateFakeIBAN(bankCode string) string {
 	return strings.ToUpper(countryCode + checkDigits + bankCode + accountNumber)
 }
 
+func generateTwoDecimalFloat(value float64) float64 {
+	return float64(int(value*100)) / 100
+}
+
 func createInitialData() {
 	var users []User
 	for i := 0; i < 100; i++ {
@@ -69,7 +73,7 @@ func createInitialData() {
 		for j := 0; j < rand.Intn(3)+1; j++ {
 			account := Account{
 				UserID:        user.ID,
-				Balance:       rand.Float64() * 10000,
+				Balance:       generateTwoDecimalFloat(rand.Float64() * 10000),
 				AccountNumber: generateFakeIBAN(bankCode),
 			}
 			accounts = append(accounts, account)
@@ -84,22 +88,23 @@ func createInitialData() {
 		}
 		instrumentCategories = append(instrumentCategories, category)
 	}
+	DB.Create(&instrumentCategories)
 
 	var instruments []Instrument
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		var name string
 		for {
-			name = faker.Word()
+			name = faker.UUIDDigit()
 			if len(name) >= 3 {
 				break
 			}
 		}
-		symbol := strings.ToUpper(name[:3])
+		symbol := strings.ToUpper(name[:4])
 		instrument := Instrument{
-			Name:               name,
-			Symbol:             symbol,
-			Price:              rand.Float64() * 200,
-			InstrumentCategory: instrumentCategories[rand.Intn(len(instrumentCategories))],
+			Name:                 name,
+			Symbol:               symbol,
+			Price:                generateTwoDecimalFloat(rand.Float64() * 200),
+			InstrumentCategoryID: instrumentCategories[rand.Intn(len(instrumentCategories))].ID,
 		}
 		instruments = append(instruments, instrument)
 	}
@@ -111,7 +116,7 @@ func createInitialData() {
 			investment := Investment{
 				UserID:       user.ID,
 				InstrumentID: instruments[rand.Intn(len(instruments))].ID,
-				Amount:       rand.Float64() * 1000,
+				Amount:       generateTwoDecimalFloat(rand.Float64() * 1000),
 			}
 			investments = append(investments, investment)
 		}
@@ -138,7 +143,7 @@ func createInitialData() {
 				transaction := Transaction{
 					AccountID:   fromAccount.ID,
 					ToAccountID: toAccount.ID,
-					Amount:      rand.Float64() * 500,
+					Amount:      generateTwoDecimalFloat(rand.Float64() * 500),
 					CategoryID:  categories[rand.Intn(len(categories))].ID,
 				}
 				transactions = append(transactions, transaction)
