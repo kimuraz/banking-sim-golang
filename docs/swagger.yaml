@@ -163,6 +163,27 @@ paths:
       consumes:
       - application/json
       description: Get all instruments
+      parameters:
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - description: Search by name
+        in: query
+        name: q
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Order by price ASC or DESC
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
