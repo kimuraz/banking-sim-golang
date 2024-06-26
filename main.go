@@ -5,10 +5,12 @@ import (
 	"banking_sim/handlers"
 	"banking_sim/middleware"
 	"banking_sim/models"
+	"github.com/cnjack/throttle"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"time"
 )
 
 // @title Banking Simulation API
@@ -29,10 +31,15 @@ func main() {
 	router := gin.Default()
 	configCors := cors.DefaultConfig()
 	configCors.AllowAllOrigins = true
+
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Use(cors.New(configCors))
 
 	auth := router.Group("/api/v1")
+	auth.Use(throttle.Policy(&throttle.Quota{
+		Limit:  100,
+		Within: time.Second,
+	}))
 	auth.POST("/auth", handlers.Login)
 	auth.GET("/emails", handlers.GetEmails)
 	auth.Use(middleware.Auth())
